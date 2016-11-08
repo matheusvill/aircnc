@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/matheusvill/aircnc/api"
 )
 
 func main() {
-	fmt.Println("AA")
+	api.Start()
 }
