@@ -1,0 +1,8 @@
+repository:
+  image: repository
+  ports:
+    - "5432:5432"
+  environment: 
+    POSTGRES_USER: "data_api"
+    POSTGRES_PASSWORD: "teste"
+    POSTGRES_DB: "repositorio" 
