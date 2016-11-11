@@ -4,61 +4,58 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
-type Storage interface {
-	// inserir os dados e voltar a chave do storage
-	InsertUser(email, password string) int
-	// pegar todos os dados do user pelo id (que é chave)
-	GetUser(id int) map[string]interface{}
-	// atualizar todos os dados do user
-	UpdateUser(email, password string) bool
-
-	// inserir os dados e voltar a chave do storage
-	InsertHome(name, address, country, city string, user int) int
-	// pegar todos os dados do home pelo id
-	GetHome(id string) map[string]interface{}
-	// atualizar todos os dados do home
-	UpdateHome(email, password string) bool
-}
-
-func (self *Storage) InsertUser(email, password string) int {
-
-	db, err := sql.Open("sqlite3", "aircnc.db")
-	checkErr(err)
+func InsertUser(email, password string) int64 {
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer func() { _ = db.Close() }()
 
 	tx, err := db.Begin()
-	checkErr(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	// insert
 	stmt, err := db.Prepare("INSERT INTO user(email, password) values(?,?)")
-	checkErr(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	res, err := stmt.Exec(email, password)
-	checkErr(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	id, err := res.LastInsertId()
-	checkErr(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	tx.Commit()
 
 	return id
 }
 
-func (self *Storage) GetUser(id int) map[string]interface{} {
+func GetUser(id int) map[string]interface{} {
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer func() { _ = db.Close() }()
 
 	var email, password string
-
-	db, err := sql.Open("sqlite3", "aircnc.db")
-	checkErr(err)
-
-	// select
-	stmt, err := db.Prepare("SELECT email, password FROM user WHERE id=?")
-	checkErr(err)
+	stmt, err := db.Prepare("SELECT email, password FROM aircnc.user WHERE id=?")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	err = stmt.QueryRow(id).Scan(&email, &password)
-	checkErr(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	user := map[string]interface{}{
 		"email":    email,
@@ -68,24 +65,26 @@ func (self *Storage) GetUser(id int) map[string]interface{} {
 	return user
 }
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func CreateDb() {
-	db, err := sql.Open("sqlite3", "aircnc.db")
-	checkErr(err)
-
-	sql := `CREATE TABLE user (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				username VARCHAR(64) NOT NULL,
-				password VARCHAR(64) NOT NULL
-			);`
-
-	_, err = db.Exec(sql)
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
 	if err != nil {
 		fmt.Println(err)
 	}
+	defer func() { _ = db.Close() }()
+
+	sql := `DROP DATABASE IF EXISTS aircnc;`
+	_, _ = db.Exec(sql)
+
+	sql = `CREATE DATABASE aircnc;`
+	_, _ = db.Exec(sql)
+
+	sql = `CREATE TABLE aircnc.user (
+		id SERIAL PRIMARY KEY,
+		email VARCHAR(64) NOT NULL,
+		password VARCHAR(64) NOT NULL
+	);`
+	_, _ = db.Exec(sql)
+
+	sql = `INSERT INTO aircnc.user (email, password) VALUES ('matheusvill@gmail.com','1234');`
+	_, _ = db.Exec(sql)
 }

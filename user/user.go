@@ -14,35 +14,30 @@ type User struct {
 }
 
 func Create(email, password string) error {
-	s := storage.New()
-
 	if checkEmail(email) {
-		s.InsertUser(email, password)
+		storage.InsertUser(email, password)
 		return nil
 	}
 
 	return errors.New("Invalid email!")
 }
 
-func Update(id int, email, password string) error {
-	s := storage.New()
+// func Update(id int, email, password string) error {
+// 	if checkEmail(email) {
+// 		storage.UpdateUser(id, email, password)
+// 		return nil
+// 	}
 
-	if checkEmail(email) {
-		s.UpdateUser(id, email, password)
-		return nil
-	}
-
-	return errors.New("Invalid email!")
-}
+// 	return errors.New("Invalid email!")
+// }
 
 func Get(id int) User {
-	s := storage.New()
-	userMap := s.GetUser(id)
+	userMap := storage.GetUser(id)
 
 	user := User{}
 	if userMap != nil {
-		user.Email = userMap["email"]
-		user.Password = userMap["password"]
+		user.Email = userMap["email"].(string)
+		user.Password = userMap["password"].(string)
 	}
 
 	return user

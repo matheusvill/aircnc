@@ -1,8 +1,6 @@
-repository:
-  image: repository
+storage:
+  image: cockroachdb/cockroach:beta-20161103
   ports:
-    - "5432:5432"
-  environment: 
-    POSTGRES_USER: "data_api"
-    POSTGRES_PASSWORD: "teste"
-    POSTGRES_DB: "repositorio" 
+    - "26257:26257"
+  entrypoint: bash
+  command: -c './cockroach start --insecure'
