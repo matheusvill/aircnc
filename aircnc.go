@@ -1,11 +1,8 @@
 package main
 
-import (
-	"github.com/matheusvill/aircnc/api"
-	"github.com/matheusvill/aircnc/storage"
-)
+import "github.com/matheusvill/aircnc/api"
 
 func main() {
-	storage.CreateDb()
+	// storage.CreateDb()
 	api.Start()
 }

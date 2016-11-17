@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -19,7 +20,7 @@ func InsertUser(email, password string) int64 {
 		fmt.Println(err)
 	}
 
-	stmt, err := db.Prepare("INSERT INTO user(email, password) values(?,?)")
+	stmt, err := db.Prepare("INSERT INTO aircnc.user (email, password) values ($1, $2)")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -44,17 +45,11 @@ func GetUser(id int) map[string]interface{} {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer func() { _ = db.Close() }()
 
 	var email, password string
-	stmt, err := db.Prepare("SELECT email, password FROM aircnc.user WHERE id=?")
+	err = db.QueryRow("SELECT email, password FROM aircnc.user WHERE id = $1", id).Scan(&email, &password)
 	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = stmt.QueryRow(id).Scan(&email, &password)
-	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	user := map[string]interface{}{

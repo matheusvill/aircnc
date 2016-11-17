@@ -25,5 +25,14 @@ func Start() {
 		c.JSON(http.StatusOK, user)
 	})
 
+	r.POST("/user", func(c *gin.Context) {
+		var u user.User
+		c.BindJSON(&u)
+
+		_ = user.Create(u)
+
+		c.JSON(http.StatusOK, nil)
+	})
+
 	r.Run()
 }

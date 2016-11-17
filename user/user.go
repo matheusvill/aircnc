@@ -9,13 +9,13 @@ import (
 )
 
 type User struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-func Create(email, password string) error {
-	if checkEmail(email) {
-		storage.InsertUser(email, password)
+func Create(user User) error {
+	if CheckEmail(user.Email) {
+		storage.InsertUser(user.Email, user.Password)
 		return nil
 	}
 
@@ -43,7 +43,7 @@ func Get(id int) User {
 	return user
 }
 
-func checkEmail(email string) bool {
+func CheckEmail(email string) bool {
 	email = strings.ToUpper(email)
 	match, _ := regexp.MatchString(`^[A-Z0-9_.-]*[@][A-Z0-9]*[.][A-Z]{2,9}(\.[A-Z]{2,4})?(\.[A-Z]{2,4})?$`, email)
 	if match {
