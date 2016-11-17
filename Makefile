@@ -26,7 +26,6 @@ run: build
 	docker run $(RUN_GO) ./aircnc
 
 start-compose:
-	docker build -t repository -f ./tests/repository/Dockerfile .
 	docker-compose up -d
 
 stop-compose:

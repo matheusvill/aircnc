@@ -1,4 +1,43 @@
-hash: 476adae001c1fda46e3cd648715a8136aa61cffdc63daef5a4785730c4e3e9d7
-updated: 2016-11-08T22:09:08.674480195Z
-imports: []
-testImports: []
+hash: 6af059d61f963c1c0c6829280eaa593c7d0ceb9e7e59b80e88e79119c2513b3d
+updated: 2016-11-10T22:17:11.444422844Z
+imports:
+- name: github.com/gin-gonic/gin
+  version: bb159f9260a262fccbdbd6f37f8575d1e7e6aaa0
+  subpackages:
+  - binding
+  - render
+- name: github.com/golang/protobuf
+  version: 2402d76f3d41f928c7902a765dfc872356dd3aad
+  subpackages:
+  - proto
+- name: github.com/lib/pq
+  version: d8eeeb8bae8896dd8e1b7e514ab0d396c4f12a1b
+  subpackages:
+  - oid
+- name: github.com/manucorporat/sse
+  version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+- name: github.com/mattn/go-sqlite3
+  version: f043f8092b52ded4899199e875282ac4dc93d266
+- name: golang.org/x/net
+  version: f315505cf3349909cdf013ea56690da34e96a451
+  subpackages:
+  - context
+- name: gopkg.in/go-playground/validator.v8
+  version: c193cecd124b5cc722d7ee5538e945bdb3348435
+- name: gopkg.in/yaml.v2
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
+  subpackages:
+  - assert
+  - require
+  - suite

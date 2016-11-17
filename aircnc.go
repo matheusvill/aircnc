@@ -1,9 +1,8 @@
 package main
 
-import (
-	"fmt"
-)
+import "github.com/matheusvill/aircnc/api"
 
 func main() {
-	fmt.Println("AA")
+	// storage.CreateDb()
+	api.Start()
 }
