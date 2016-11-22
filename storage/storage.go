@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func InsertUser(email, password string) int64 {
+func InsertUser(email, password string) {
 	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
 	if err != nil {
 		fmt.Println(err)
@@ -25,22 +25,15 @@ func InsertUser(email, password string) int64 {
 		fmt.Println(err)
 	}
 
-	res, err := stmt.Exec(email, password)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	id, err := res.LastInsertId()
+	_, err = stmt.Exec(email, password)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	tx.Commit()
-
-	return id
 }
 
-func InsertApartment(titulo, valor, descricao, cidade, uf string) int64 {
+func InsertApartment(titulo, valor, descricao, cidade, uf string) {
 	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
 	if err != nil {
 		fmt.Println(err)
@@ -57,22 +50,15 @@ func InsertApartment(titulo, valor, descricao, cidade, uf string) int64 {
 		fmt.Println(err)
 	}
 
-	res, err := stmt.Exec(titulo, valor, descricao, cidade, uf)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	id, err := res.LastInsertId()
+	_, err = stmt.Exec(titulo, valor, descricao, cidade, uf)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	tx.Commit()
-
-	return id
 }
 
-func InsertBooking(user, apartment int) int64 {
+func InsertBooking(user, apartment int) {
 	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
 	if err != nil {
 		fmt.Println(err)
@@ -89,19 +75,12 @@ func InsertBooking(user, apartment int) int64 {
 		fmt.Println(err)
 	}
 
-	res, err := stmt.Exec(user, apartment)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	id, err := res.LastInsertId()
+	_, err = stmt.Exec(user, apartment)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	tx.Commit()
-
-	return id
 }
 
 func GetUser(id int) map[string]interface{} {
@@ -122,6 +101,36 @@ func GetUser(id int) map[string]interface{} {
 	}
 
 	return user
+}
+
+func GetUserByEmail(email string) int {
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var id int
+	err = db.QueryRow("SELECT id FROM aircnc.user WHERE email = $1", email).Scan(&id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return id
+}
+
+func GetApartmentByTitulo(titulo string) int {
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var id int
+	err = db.QueryRow("SELECT id FROM aircnc.apartment WHERE titulo = $1", titulo).Scan(&id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return id
 }
 
 func GetApartment(id int) map[string]interface{} {
@@ -214,5 +223,16 @@ func CreateDb() {
 		(select id from aircnc.user where email = 'matheusvill@gmail.com'),
 		(select id from aircnc.apartment where titulo = 'Neoway')
 	);`
+	_, _ = db.Exec(sql)
+}
+
+func DropDb() {
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer func() { _ = db.Close() }()
+
+	sql := `DROP DATABASE IF EXISTS aircnc;`
 	_, _ = db.Exec(sql)
 }

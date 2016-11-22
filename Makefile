@@ -37,8 +37,8 @@ check: dev-image
 
 check-integration: dev-image stop-compose start-compose
 	@docker run $(RUN_GO) ./hack/check-integration.sh
-	docker-compose kill
-	docker-compose rm -f
+	# docker-compose kill
+	# docker-compose rm -f
 
 stop:
 	docker stop $(DEV_IMAGE_NAME)

@@ -5,7 +5,7 @@
 touch coverage.out
 echo "mode: atomic" > full_coverage.out
 for pkg in $(go list ./... | grep -v /vendor/); do
-	go test -tags unit -coverprofile=coverage.out -race -covermode=atomic -timeout 30s $pkg
+	go test -tags unit -coverprofile=coverage.out -race -covermode=atomic -timeout 60s $pkg
 	grep -h -v "^mode: atomic" coverage.out >> full_coverage.out
 done
 
