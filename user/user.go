@@ -22,15 +22,6 @@ func Create(user User) error {
 	return errors.New("Invalid email!")
 }
 
-// func Update(id int, email, password string) error {
-// 	if checkEmail(email) {
-// 		storage.UpdateUser(id, email, password)
-// 		return nil
-// 	}
-
-// 	return errors.New("Invalid email!")
-// }
-
 func Get(id int) User {
 	userMap := storage.GetUser(id)
 
