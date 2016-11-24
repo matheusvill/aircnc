@@ -133,6 +133,21 @@ func GetApartmentByTitulo(titulo string) int {
 	return id
 }
 
+func GetBookingByUser(userId int) int {
+	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var id int
+	err = db.QueryRow("SELECT id FROM aircnc.booking WHERE user_id = $1", userId).Scan(&id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return id
+}
+
 func GetApartment(id int) map[string]interface{} {
 	db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
 	if err != nil {
@@ -184,7 +199,9 @@ func CreateDb() {
 	defer func() { _ = db.Close() }()
 
 	sql := `DROP DATABASE IF EXISTS aircnc;`
-	_, _ = db.Exec(sql)
+	_, err = db.Exec(sql)
+
+	fmt.Println("ERROR:", err)
 
 	sql = `CREATE DATABASE aircnc;`
 	_, _ = db.Exec(sql)
@@ -233,6 +250,6 @@ func DropDb() {
 	}
 	defer func() { _ = db.Close() }()
 
-	sql := `DROP DATABASE IF EXISTS aircnc;`
+	sql := `DROP DATABASE aircnc;`
 	_, _ = db.Exec(sql)
 }

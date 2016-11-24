@@ -8,7 +8,6 @@ import (
 )
 
 func TestUser(t *testing.T) {
-	CreateDb()
 
 	resultExpected := map[string]interface{}{
 		"email":    "teste@teste.com",
@@ -25,32 +24,74 @@ func TestUser(t *testing.T) {
 
 	assert.Exactly(t, resultExpected, resultActual, "Expected to be equal.")
 
-	// DropDb()
 }
 
-// func TestApartment(t *testing.T) {
-// 	CreateDb()
+func TestApartment(t *testing.T) {
 
-// 	resultExpected := map[string]interface{}{
-// 		"titulo":    "teste",
-// 		"valor":     "1",
-// 		"descricao": "testando",
-// 		"cidade":    "floripa",
-// 		"uf":        "SC",
-// 	}
+	resultExpected := map[string]interface{}{
+		"titulo":    "teste",
+		"valor":     "1",
+		"descricao": "testando",
+		"cidade":    "floripa",
+		"uf":        "SC",
+	}
 
-// 	InsertApartment(
-// 		resultExpected["titulo"].(string),
-// 		resultExpected["valor"].(string),
-// 		resultExpected["descricao"].(string),
-// 		resultExpected["cidade"].(string),
-// 		resultExpected["uf"].(string),
-// 	)
+	InsertApartment(
+		resultExpected["titulo"].(string),
+		resultExpected["valor"].(string),
+		resultExpected["descricao"].(string),
+		resultExpected["cidade"].(string),
+		resultExpected["uf"].(string),
+	)
 
-// 	apartmentId := GetApartmentByTitulo(resultExpected["titulo"].(string))
-// 	resultActual := GetApartment(int(apartmentId))
+	apartmentId := GetApartmentByTitulo(resultExpected["titulo"].(string))
+	resultActual := GetApartment(int(apartmentId))
 
-// 	assert.Exactly(t, resultExpected, resultActual, "Expected to be equal.")
+	assert.Exactly(t, resultExpected, resultActual, "Expected to be equal.")
 
-// 	DropDb()
-// }
+}
+
+func TestBooking(t *testing.T) {
+
+	userExpected := map[string]interface{}{
+		"email":    "teste@teste.com",
+		"password": "1234",
+	}
+
+	InsertUser(
+		userExpected["email"].(string),
+		userExpected["password"].(string),
+	)
+
+	apartmentExpected := map[string]interface{}{
+		"titulo":    "teste",
+		"valor":     "1",
+		"descricao": "testando",
+		"cidade":    "floripa",
+		"uf":        "SC",
+	}
+
+	InsertApartment(
+		apartmentExpected["titulo"].(string),
+		apartmentExpected["valor"].(string),
+		apartmentExpected["descricao"].(string),
+		apartmentExpected["cidade"].(string),
+		apartmentExpected["uf"].(string),
+	)
+
+	userId := GetUserByEmail(userExpected["email"].(string))
+	apartmentId := GetApartmentByTitulo(apartmentExpected["titulo"].(string))
+
+	bookingExpected := map[string]interface{}{
+		"user":      userId,
+		"apartment": apartmentId,
+	}
+
+	InsertBooking(userId, apartmentId)
+
+	bookingId := GetBookingByUser(userId)
+	bookingActual := GetBooking(bookingId)
+
+	assert.Exactly(t, bookingExpected, bookingActual, "Expected to be equal.")
+
+}
