@@ -53,5 +53,7 @@ release: publish
 	git tag -a $(version) -m "Generated release "$(version)
 	git push origin $(version)
 
-check-cover: dev-image
+check-cover: dev-image stop-compose start-compose
 	@docker run $(RUN_GO) ./hack/cover.sh
+	docker-compose kill
+	docker-compose rm -f

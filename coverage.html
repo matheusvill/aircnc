@@ -54,9 +54,13 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/matheusvill/aircnc/storage/storage.go (37.9%)</option>
+				<option value="file0">github.com/matheusvill/aircnc/apartment/apartment.go (100.0%)</option>
 				
-				<option value="file1">github.com/matheusvill/aircnc/user/user.go (33.3%)</option>
+				<option value="file1">github.com/matheusvill/aircnc/booking/booking.go (100.0%)</option>
+				
+				<option value="file2">github.com/matheusvill/aircnc/storage/storage.go (57.6%)</option>
+				
+				<option value="file3">github.com/matheusvill/aircnc/user/user.go (93.3%)</option>
 				
 				</select>
 			</div>
@@ -79,7 +83,80 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package storage
+		<pre class="file" id="file0" style="display: none">package apartment
+
+import "github.com/matheusvill/aircnc/storage"
+
+type Apartment struct {
+        Titulo    string `json:"titulo"`
+        Valor     string `json:"valor"`
+        Descricao string `json:"descricao"`
+        Cidade    string `json:"cidade"`
+        Uf        string `json:"uf"`
+}
+
+func Create(apartment Apartment) error <span class="cov8" title="1">{
+        storage.InsertApartment(
+                apartment.Titulo,
+                apartment.Valor,
+                apartment.Descricao,
+                apartment.Cidade,
+                apartment.Uf,
+        )
+
+        return nil
+}</span></span>
+
+func Get(id int) Apartment <span class="cov8" title="1">{
+        apartmentMap := storage.GetApartment(id)
+
+        ap := Apartment{}
+        if apartmentMap != nil </span></span><span class="cov8" title="1">{
+                ap.Titulo = apartmentMap["titulo"].(string)
+                ap.Valor = apartmentMap["valor"].(string)
+                ap.Descricao = apartmentMap["descricao"].(string)
+                ap.Cidade = apartmentMap["cidade"].(string)
+                ap.Uf = apartmentMap["uf"].(string)
+        }</span></span>
+
+        <span class="cov8" title="1">return ap</span></span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package booking
+
+import (
+        "github.com/matheusvill/aircnc/apartment"
+        "github.com/matheusvill/aircnc/storage"
+        "github.com/matheusvill/aircnc/user"
+)
+
+type Booking struct {
+        User      int `json:"user"`
+        Apartment int `json:"apartment"`
+}
+
+func Create(booking Booking) error <span class="cov8" title="1">{
+
+        storage.InsertBooking(booking.User, booking.Apartment)
+
+        return nil
+}</span></span>
+
+func Get(id int) map[string]interface{} <span class="cov8" title="1">{
+        bookingMap := storage.GetBooking(id)
+        user := user.Get(bookingMap["user"].(int))
+        apartment := apartment.Get(bookingMap["apartment"].(int))
+
+        result := make(map[string]interface{})
+        result["user"] = user
+        result["apartment"] = apartment
+
+        return result
+}</span></span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package storage
 
 import (
         "database/sql"
@@ -89,94 +166,94 @@ import (
         _ "github.com/lib/pq"
 )
 
-func InsertUser(email, password string) <span class="cov8" title="1">{
+func InsertUser(email, password string) <span class="cov10" title="2">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
-        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = db.Close() }</span>()
+        <span class="cov10" title="2">defer func() </span><span class="cov10" title="2">{ _ = db.Close() }</span>()
 
-        <span class="cov8" title="1">tx, err := db.Begin()
+        <span class="cov10" title="2">tx, err := db.Begin()
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov8" title="1">stmt, err := db.Prepare("INSERT INTO aircnc.user (email, password) values ($1, $2)")
+        <span class="cov10" title="2">stmt, err := db.Prepare("INSERT INTO aircnc.user (email, password) values ($1, $2)")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov8" title="1">_, err = stmt.Exec(email, password)
+        <span class="cov10" title="2">_, err = stmt.Exec(email, password)
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov8" title="1">tx.Commit()</span>
+        <span class="cov10" title="2">tx.Commit()</span>
 }
 
-func InsertApartment(titulo, valor, descricao, cidade, uf string) <span class="cov0" title="0">{
+func InsertApartment(titulo, valor, descricao, cidade, uf string) <span class="cov10" title="2">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
-        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{ _ = db.Close() }</span>()
+        <span class="cov10" title="2">defer func() </span><span class="cov10" title="2">{ _ = db.Close() }</span>()
 
-        <span class="cov0" title="0">tx, err := db.Begin()
+        <span class="cov10" title="2">tx, err := db.Begin()
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">stmt, err := db.Prepare("INSERT INTO aircnc.apartment (titulo,valor,descricao,cidade,uf) values ($1, $2, $3, $4, $5)")
+        <span class="cov10" title="2">stmt, err := db.Prepare("INSERT INTO aircnc.apartment (titulo,valor,descricao,cidade,uf) values ($1, $2, $3, $4, $5)")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">_, err = stmt.Exec(titulo, valor, descricao, cidade, uf)
+        <span class="cov10" title="2">_, err = stmt.Exec(titulo, valor, descricao, cidade, uf)
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">tx.Commit()</span>
+        <span class="cov10" title="2">tx.Commit()</span>
 }
 
-func InsertBooking(user, apartment int) <span class="cov0" title="0">{
+func InsertBooking(user, apartment int) <span class="cov1" title="1">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
-        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{ _ = db.Close() }</span>()
+        <span class="cov1" title="1">defer func() </span><span class="cov1" title="1">{ _ = db.Close() }</span>()
 
-        <span class="cov0" title="0">tx, err := db.Begin()
+        <span class="cov1" title="1">tx, err := db.Begin()
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">stmt, err := db.Prepare("INSERT INTO aircnc.booking (user_id,apartment_id) values ($1, $2)")
+        <span class="cov1" title="1">stmt, err := db.Prepare("INSERT INTO aircnc.booking (user_id,apartment_id) values ($1, $2)")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">_, err = stmt.Exec(user, apartment)
+        <span class="cov1" title="1">_, err = stmt.Exec(user, apartment)
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">tx.Commit()</span>
+        <span class="cov1" title="1">tx.Commit()</span>
 }
 
-func GetUser(id int) map[string]interface{} <span class="cov8" title="1">{
+func GetUser(id int) map[string]interface{} <span class="cov1" title="1">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov8" title="1">var email, password string
+        <span class="cov1" title="1">var email, password string
         err = db.QueryRow("SELECT email, password FROM aircnc.user WHERE id = $1", id).Scan(&amp;email, &amp;password)
         if err != nil </span><span class="cov0" title="0">{
                 log.Fatal(err)
         }</span>
 
-        <span class="cov8" title="1">user := map[string]interface{}{
+        <span class="cov1" title="1">user := map[string]interface{}{
                 "email":    email,
                 "password": password,
         }
@@ -184,49 +261,64 @@ func GetUser(id int) map[string]interface{} <span class="cov8" title="1">{
         return user</span>
 }
 
-func GetUserByEmail(email string) int <span class="cov8" title="1">{
+func GetUserByEmail(email string) int <span class="cov10" title="2">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov8" title="1">var id int
+        <span class="cov10" title="2">var id int
         err = db.QueryRow("SELECT id FROM aircnc.user WHERE email = $1", email).Scan(&amp;id)
         if err != nil </span><span class="cov0" title="0">{
                 log.Fatal(err)
         }</span>
 
-        <span class="cov8" title="1">return id</span>
+        <span class="cov10" title="2">return id</span>
 }
 
-func GetApartmentByTitulo(titulo string) int <span class="cov0" title="0">{
+func GetApartmentByTitulo(titulo string) int <span class="cov10" title="2">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">var id int
+        <span class="cov10" title="2">var id int
         err = db.QueryRow("SELECT id FROM aircnc.apartment WHERE titulo = $1", titulo).Scan(&amp;id)
         if err != nil </span><span class="cov0" title="0">{
                 log.Fatal(err)
         }</span>
 
-        <span class="cov0" title="0">return id</span>
+        <span class="cov10" title="2">return id</span>
 }
 
-func GetApartment(id int) map[string]interface{} <span class="cov0" title="0">{
+func GetBookingByUser(userId int) int <span class="cov1" title="1">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">var titulo, valor, descricao, cidade, uf string
+        <span class="cov1" title="1">var id int
+        err = db.QueryRow("SELECT id FROM aircnc.booking WHERE user_id = $1", userId).Scan(&amp;id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        <span class="cov1" title="1">return id</span>
+}
+
+func GetApartment(id int) map[string]interface{} <span class="cov1" title="1">{
+        db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+        }</span>
+
+        <span class="cov1" title="1">var titulo, valor, descricao, cidade, uf string
         err = db.QueryRow("SELECT titulo, valor, descricao, cidade, uf FROM aircnc.apartment WHERE id = $1", id).Scan(&amp;titulo, &amp;valor, &amp;descricao, &amp;cidade, &amp;uf)
         if err != nil </span><span class="cov0" title="0">{
                 log.Fatal(err)
         }</span>
 
-        <span class="cov0" title="0">ap := map[string]interface{}{
+        <span class="cov1" title="1">ap := map[string]interface{}{
                 "titulo":    titulo,
                 "valor":     valor,
                 "descricao": descricao,
@@ -237,19 +329,19 @@ func GetApartment(id int) map[string]interface{} <span class="cov0" title="0">{
         return ap</span>
 }
 
-func GetBooking(id int) map[string]interface{} <span class="cov0" title="0">{
+func GetBooking(id int) map[string]interface{} <span class="cov1" title="1">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
 
-        <span class="cov0" title="0">var user, apartment int
+        <span class="cov1" title="1">var user, apartment int
         err = db.QueryRow("SELECT user_id,apartment_id FROM aircnc.booking WHERE id = $1", id).Scan(&amp;user, &amp;apartment)
         if err != nil </span><span class="cov0" title="0">{
                 log.Fatal(err)
         }</span>
 
-        <span class="cov0" title="0">book := map[string]interface{}{
+        <span class="cov1" title="1">book := map[string]interface{}{
                 "user":      user,
                 "apartment": apartment,
         }
@@ -257,15 +349,17 @@ func GetBooking(id int) map[string]interface{} <span class="cov0" title="0">{
         return book</span>
 }
 
-func CreateDb() <span class="cov8" title="1">{
+func CreateDb() <span class="cov0" title="0">{
         db, err := sql.Open("postgres", "postgres://root@localhost:26257?sslmode=disable")
         if err != nil </span><span class="cov0" title="0">{
                 fmt.Println(err)
         }</span>
-        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{ _ = db.Close() }</span>()
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{ _ = db.Close() }</span>()
 
-        <span class="cov8" title="1">sql := `DROP DATABASE IF EXISTS aircnc;`
-        _, _ = db.Exec(sql)
+        <span class="cov0" title="0">sql := `DROP DATABASE IF EXISTS aircnc;`
+        _, err = db.Exec(sql)
+
+        fmt.Println("ERROR:", err)
 
         sql = `CREATE DATABASE aircnc;`
         _, _ = db.Exec(sql)
@@ -314,12 +408,12 @@ func DropDb() <span class="cov0" title="0">{
         }</span>
         <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{ _ = db.Close() }</span>()
 
-        <span class="cov0" title="0">sql := `DROP DATABASE IF EXISTS aircnc;`
+        <span class="cov0" title="0">sql := `DROP DATABASE aircnc;`
         _, _ = db.Exec(sql)</span>
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package user
+		<pre class="file" id="file3" style="display: none">package user
 
 import (
         "errors"
@@ -334,8 +428,8 @@ type User struct {
         Password string `json:"password"`
 }
 
-func Create(user User) error <span class="cov0" title="0">{
-        if CheckEmail(user.Email) </span><span class="cov0" title="0">{
+func Create(user User) error <span class="cov1" title="1">{
+        if CheckEmail(user.Email) </span><span class="cov1" title="1">{
                 storage.InsertUser(user.Email, user.Password)
                 return nil
         }</span>
@@ -343,22 +437,22 @@ func Create(user User) error <span class="cov0" title="0">{
         <span class="cov0" title="0">return errors.New("Invalid email!")</span>
 }
 
-func Get(id int) User <span class="cov0" title="0">{
+func Get(id int) User <span class="cov1" title="1">{
         userMap := storage.GetUser(id)
 
         user := User{}
-        if userMap != nil </span><span class="cov0" title="0">{
+        if userMap != nil </span><span class="cov1" title="1">{
                 user.Email = userMap["email"].(string)
                 user.Password = userMap["password"].(string)
         }</span>
 
-        <span class="cov0" title="0">return user</span>
+        <span class="cov1" title="1">return user</span>
 }
 
-func CheckEmail(email string) bool <span class="cov10" title="2">{
+func CheckEmail(email string) bool <span class="cov10" title="3">{
         email = strings.ToUpper(email)
         match, _ := regexp.MatchString(`^[A-Z0-9_.-]*[@][A-Z0-9]*[.][A-Z]{2,9}(\.[A-Z]{2,4})?(\.[A-Z]{2,4})?$`, email)
-        if match </span><span class="cov1" title="1">{
+        if match </span><span class="cov6" title="2">{
                 return true
         }</span>
         <span class="cov1" title="1">return false</span>
